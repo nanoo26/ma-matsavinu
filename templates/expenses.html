@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>מה מצבינו - מעקב הוצאות</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <h1 class="app-title">מה מצבינו</h1>
+      <p class="app-subtitle">מעקב הוצאות חכם למשפחה</p>
+    </header>
+
+    <main class="app-content">
+      {% if flash_message %}
+        <div class="empty-state">{{ flash_message }}</div>
+      {% endif %}
+<main class="app-content">
+
+      <section class="summary-bar">
+        <div class="summary-item">
+          <div class="summary-label">סה"כ הוצאות</div>
+          <div class="summary-value">
+            {{ '%.0f' % total_amount }} ₪
+          </div>
+        </div>
+
+        <div class="summary-item">
+          <div class="summary-label">מספר תנועות</div>
+          <div class="summary-value">
+            {{ total_rows }}
+          </div>
+        </div>
+      </section>
+
+      {% if flash_message %}
+        <div class="empty-state">{{ flash_message }}</div>
+      {% endif %}
+      {% if expenses and expenses|length > 0 %}
+        <section class="expenses-list">
+          {% for expense in expenses %}
+            <article class="expense-item">
+              <div class="expense-main">
+                <div class="expense-date-amount">
+                  <span class="expense-date">{{ expense.date }}</span>
+                  <span class="expense-amount">{{ expense.amount }} ₪</span>
+                </div>
+
+                <div class="expense-description">
+                  {{ expense.description }}
+                </div>
+              </div>
+
+              <div class="expense-actions">
+                <!-- עדכן את ה-url_for לפי מה שיש אצלך בקוד פייתון -->
+                <a href="{{ url_for('edit_expense', expense_id=expense.id) }}"
+                   class="btn-secondary btn-icon"
+                   aria-label="עריכת הוצאה">
+                  <span class="btn-icon-symbol">✏️</span>
+                  <span>עריכה</span>
+                </a>
+
+                <form method="post"
+                      action="{{ url_for('delete_expense', expense_id=expense.id) }}"
+                      class="inline-form">
+                  <button type="submit"
+                          class="btn-danger btn-icon"
+                          aria-label="מחיקת הוצאה"
+                          onclick="return confirm('למחוק את ההוצאה?');">
+                    <span class="btn-icon-symbol">🗑️</span>
+                    <span>מחיקה</span>
+                  </button>
+                </form>
+              </div>
+            </article>
+          {% endfor %}
+        </section>
+      {% else %}
+        <div class="empty-state">
+          אין עדיין הוצאות. לחץ על "הוספת הוצאה" כדי להתחיל.
+        </div>
+      {% endif %}
+    </main>
+
+    <footer class="app-footer">
+      <a href="{{ url_for('add_expense') }}" class="btn-primary btn-full">
+        + הוספת הוצאה
+      </a>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>הוספת הוצאה</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <h1 class="app-title">הוספת הוצאה</h1>
+      <p class="app-subtitle">מוסיפים הוצאה חדשה למעקב</p>
+    </header>
+
+    <main class="app-content">
+      {% if error %}
+        <div class="empty-state">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" class="form-screen">
+        <div class="expense-card">
+
+          <div class="form-group">
+            <label for="date-input" class="form-label">תאריך</label>
+            <input id="date-input"
+                   type="date"
+                   name="date"
+                   required
+                   class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label for="category-input" class="form-label">קטגוריה</label>
+            <input id="category-input"
+                   list="category-options"
+                   name="category"
+                   required
+                   class="form-input"
+                   placeholder="בחר קטגוריה">
+            <datalist id="category-options">
+              {% for cat in categories %}
+                <option value="{{ cat }}">
+              {% endfor %}
+            </datalist>
+          </div>
+
+          <div class="form-group">
+            <label for="amount-input" class="form-label">סכום</label>
+            <input id="amount-input"
+                   type="text"
+                   name="amount"
+                   required
+                   inputmode="decimal"
+                   class="form-input"
+                   placeholder="כמה?">
+          </div>
+
+          <div class="form-group">
+            <label for="payment-input" class="form-label">אמצעי תשלום</label>
+            <input id="payment-input"
+                   list="payment-options"
+                   name="payment_method"
+                   required
+                   class="form-input"
+                   placeholder="יש לבחור">
+            <datalist id="payment-options">
+              {% for method in payment_methods %}
+                <option value="{{ method }}">
+              {% endfor %}
+            </datalist>
+          </div>
+
+          <div class="form-group">
+            <label for="description-input" class="form-label">הערות / תיאור</label>
+            <input id="description-input"
+                   type="text"
+                   name="description"
+                   required
+                   class="form-input"
+                   placeholder="מה קנית?">
+          </div>
+
+          <button class="btn-primary btn-full" type="submit">
+            שמירת הוצאה
+          </button>
+
+        </div>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

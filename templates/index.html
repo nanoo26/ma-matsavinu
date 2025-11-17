@@ -413,3 +413,43 @@
       {% if expenses %}
         <div class="desktop-table-wrapper">
           <table>
+            <thead>
+              <tr>
+                <th>תאריך</th>
+                <th>מחיר</th>
+                <th>תיאור</th>
+                <th>קטגוריה</th>
+                <th>אמצעי תשלום</th>
+                <th>פעולות</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in expenses %}
+                <tr>
+                  <td>{{ row["date"] }}</td>
+                  <td class="amount-cell">{{ "%.2f"|format(row["amount"]) }} ₪</td>
+                  <td>{{ row["description"] }}</td>
+                  <td>{{ row["category"] }}</td>
+                  <td>{{ row["payment_method"] }}</td>
+                  <td class="table-actions">
+                    <a href="{{ url_for('edit_expense', expense_id=row['id']) }}" class="table-action-link table-edit">ערוך</a>
+                    <a href="{{ url_for('delete_expense', expense_id=row['id']) }}" class="table-action-link table-delete"
+                       onclick="return confirm('בטוח למחוק?');">מחק</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  </main>
+
+  <!-- כפתור FAB עגול צף -->
+  <a href="{{ url_for('add_expense') }}" class="btn-fab" title="הוסף הוצאה" aria-label="הוסף הוצאה">
+    <span class="material-icons">add</span>
+  </a>
+</div>
+
+</body>
+</html>

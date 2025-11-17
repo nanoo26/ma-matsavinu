@@ -104,7 +104,7 @@
     .expense-date {
       font-weight: 700;
       color: #ffffff;
-       font-size: 15px;
+      font-size: 15px;
     }
 
     .expense-amount {
@@ -130,64 +130,89 @@
 
     .expense-actions {
       display: flex;
-  justify-content: flex-start;
-  gap: 6px;
-  margin-top: 8px;
+      justify-content: flex-start;
+      gap: 6px;
+      margin-top: 8px;
     }
 
-  .expense-action-edit {
-  background: #e0f2fe;
-  border-color: #bae6fd;
-  color: #0369a1;
-}
+    .expense-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      cursor: pointer;
+    }
 
-.expense-action-delete {
-  background: #fee2e2;
-  border-color: #fecaca;
-  color: #b91c1c;
-}
+    .expense-action-edit {
+      background: #e0f2fe;
+      border-color: #bae6fd;
+      color: #0369a1;
+    }
 
-.material-icons {
-  font-size: 18px;
-}
+    .expense-action-delete {
+      background: #fee2e2;
+      border-color: #fecaca;
+      color: #b91c1c;
+    }
 
-.btn-text {
-  display: inline;
-}
+    .material-icons {
+      font-size: 18px;
+    }
 
-/* במובייל - רק אייקון */
-@media (max-width: 899px) {
-  .btn-text {
-    display: none;
-  }
+    .btn-text {
+      display: inline;
+    }
 
-  .expense-action-btn {
-    padding: 6px;
-    min-width: 36px;
-    justify-content: center;
-  }
-}
+    /* במובייל - רק אייקון */
+    @media (max-width: 899px) {
+      .btn-text {
+        display: none;
+      }
 
+      .expense-action-btn {
+        padding: 6px;
+        min-width: 36px;
+        justify-content: center;
+      }
+    }
+
+    /* כפתור FAB עגול צף */
     .btn-fab {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      bottom: 20px;
+      right: 20px;
       width: 56px;
       height: 56px;
       border-radius: 50%;
       background: #2563eb;
-      color: white;
+      color: #ffffff;
       font-size: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
       text-decoration: none;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      transition: background 0.2s ease;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+      z-index: 1000;
+      transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-fab .material-icons {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .btn-fab:hover {
+      background: #1d4ed8;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
     }
 
     .btn-fab:active {
-      background: #1d4ed8;
+      transform: scale(0.96);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
     /* דסקטופ */
@@ -307,6 +332,10 @@
         background: #3b82f6;
       }
 
+      .btn-fab:hover {
+        background: #2563eb;
+      }
+
       .btn-fab:active {
         background: #2563eb;
       }
@@ -355,25 +384,27 @@
                 {{ row["description"] }}
               </div>
               <div class="expense-meta">
-                  {{ row["notes"] }}
+                {{ row["notes"] }}
               </div>
               <div class="expense-actions">
                 <a href="{{ url_for('edit_expense', expense_id=row['id']) }}" class="expense-action-btn expense-action-edit">
-                  <span class="material-icons">edit</span> ערוך
+                  <span class="material-icons">edit</span>
+                  <span class="btn-text">ערוך</span>
                 </a>
                 <a href="{{ url_for('delete_expense', expense_id=row['id']) }}" class="expense-action-btn expense-action-delete"
                    onclick="return confirm('בטוח למחוק את ההוצאה הזו?');">
-                  <span class="material-icons">delete</span> מחק
+                  <span class="material-icons">delete</span>
+                  <span class="btn-text">מחק</span>
                 </a>
               </div>
             </li>
           {% endfor %}
         </ul>
       {% else %}
-        <div class="empty-state">
+        <div class="empty-state" style="text-align:center; padding:40px 0; color:#64748b;">
           <span class="material-icons" style="font-size: 48px; color: #cbd5e1;">receipt_long</span><br>
           אין עדיין הוצאות להצגה<br>
-          לחץ על ״הוסף הוצאה חדשה״ כדי להתחיל.
+          לחץ על הכפתור הכחול כדי להוסיף הוצאה חדשה.
         </div>
       {% endif %}
     </div>
@@ -382,43 +413,3 @@
       {% if expenses %}
         <div class="desktop-table-wrapper">
           <table>
-            <thead>
-              <tr>
-                <th>תאריך</th>
-                <th>מחיר</th>
-                <th>תיאור</th>
-                <th>קטגוריה</th>
-                <th>אמצעי תשלום</th>
-                <th>פעולות</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in expenses %}
-                <tr>
-                  <td>{{ row["date"] }}</td>
-                  <td class="amount-cell">{{ "%.2f"|format(row["amount"]) }} ₪</td>
-                  <td>{{ row["description"] }}</td>
-                  <td>{{ row["category"] }}</td>
-                  <td>{{ row["payment_method"] }}</td>
-                  <td class="table-actions">
-                    <a href="{{ url_for('edit_expense', expense_id=row['id']) }}" class="table-action-link table-edit">ערוך</a>
-                    <a href="{{ url_for('delete_expense', expense_id=row['id']) }}" class="table-action-link table-delete"
-                       onclick="return confirm('בטוח למחוק?');">מחק</a>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      {% endif %}
-    </div>
-  </main>
-
-  <!-- כפתור FAB -->
-  <a href="{{ url_for('add_expense') }}" class="btn-fab" title="הוסף הוצאה">
-    <span class="material-icons">add</span>
-  </a>
-</div>
-
-</body>
-</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>דוחות וסיכומים - מה מצבינו</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="app-header">
+    <div class="app-header-top">
+      <h1 class="app-title">דוחות וסיכומים</h1>
+      <nav class="header-actions">
+        <a href="{{ url_for('index') }}" class="header-link">חזרה לרשימה</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <h2 class="section-title">סיכום לפי חודשים</h2>
+
+    {% if monthly_summary %}
+      {% for row in monthly_summary %}
+        <section class="card">
+          <div class="card-row">
+            <span>{{ row["month"] }}/{{ row["year"] }}</span>
+            <span class="amount">{{ "%.2f" | format(row["total"]) }} ₪</span>
+          </div>
+        </section>
+      {% endfor %}
+    {% else %}
+      <p class="empty-state">אין עדיין נתונים להצגה.</p>
+    {% endif %}
+
+    <h2 class="section-title">סיכום לפי קטגוריות</h2>
+
+    {% if category_summary %}
+      {% for row in category_summary %}
+        <section class="card">
+          <div class="card-row">
+            <span>{{ row["category"] }}</span>
+            <span class="amount">{{ "%.2f" | format(row["total"]) }} ₪</span>
+          </div>
+        </section>
+      {% endfor %}
+    {% else %}
+      <p class="empty-state">אין עדיין נתונים לפי קטגוריות.</p>
+    {% endif %}
+
+  </main>
+
+</div>
+</body>
+</html>

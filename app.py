@@ -206,6 +206,41 @@ def delete_expense(expense_id):
     return redirect(url_for("index"))
 
 
+@app.route("/reports")
+def reports():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # סיכום לפי חודש
+    cur.execute("""
+        SELECT 
+            SUBSTR(date, 4, 2) AS month,
+            SUBSTR(date, 7, 4) AS year,
+            SUM(amount) AS total
+        FROM expenses
+        GROUP BY year, month
+        ORDER BY year DESC, month DESC
+    """)
+    monthly_summary = cur.fetchall()
+
+    # סיכום לפי קטגוריה
+    cur.execute("""
+        SELECT category, SUM(amount) AS total
+        FROM expenses
+        GROUP BY category
+        ORDER BY total DESC
+    """)
+    category_summary = cur.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "reports.html",
+        monthly_summary=monthly_summary,
+        category_summary=category_summary
+    )
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)

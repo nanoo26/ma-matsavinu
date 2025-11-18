@@ -12,21 +12,39 @@
 
   <header class="app-header">
     <div class="app-header-top">
-      <h1 class="app-title">מה מצבינו</h1>
-      <nav class="header-actions">
-        <a href="{{ url_for('reports', month=selected_month) }}" class="header-link">דוחות</a>
-        <a href="{{ url_for('add_expense') }}" class="primary-button">+ הוצאה</a>
-      </nav>
+      <div class="app-header-title-block">
+        <h1 class="app-title">מה מצבינו</h1>
+        <p class="app-subtitle">מעקב הוצאות משפחתי</p>
+      </div>
+      <a href="{{ url_for('add_expense') }}" class="primary-button">
+        + הוצאה
+      </a>
     </div>
+
+    <div class="app-tabs">
+      <a href="{{ url_for('index', month=selected_month) }}" class="tab-link tab-active">
+        הוצאות
+      </a>
+      <a href="{{ url_for('reports', month=selected_month) }}" class="tab-link">
+        דוחות
+      </a>
+    </div>
+
     <div class="summary-bar">
-      <span>סהכ שורות: {{ total_rows }}</span>
-      <span>סהכ הוצאות: {{ "%.2f" | format(total_amount) }} ₪</span>
+      <div class="summary-item">
+        <span class="summary-label">סה״כ הוצאות</span>
+        <span class="summary-value">{{ "{:,.2f}".format(total_amount) }} ₪</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">מספר פעולות</span>
+        <span class="summary-value">{{ total_rows }}</span>
+      </div>
     </div>
 
     {% if months %}
-      <form method="get" class="filter-bar">
-        <label for="month-select">חודש:</label>
-        <select id="month-select" name="month" onchange="this.form.submit()">
+      <form method="get" action="{{ url_for('index') }}" class="filter-bar">
+        <label for="month" class="filter-label">חודש</label>
+        <select name="month" id="month" class="filter-select" onchange="this.form.submit()">
           {% for m in months %}
             <option value="{{ m.key }}" {% if m.key == selected_month %}selected{% endif %}>
               {{ m.label }}
@@ -38,29 +56,36 @@
   </header>
 
   <main class="content">
+
     {% if expenses %}
       <div class="expense-list">
-        {% for exp in expenses %}
+        {% for e in expenses %}
           <article class="expense-card">
             <div class="expense-main">
-              <div class="expense-header">
-                <span class="expense-date">{{ exp["date"] }}</span>
-                <span class="expense-amount">{{ "%.2f" | format(exp["amount"]) }} ₪</span>
+              <div class="expense-header-row">
+                <span class="expense-date">{{ e.date }}</span>
+                <span class="expense-amount">
+                  {{ "{:,.2f}".format(e.amount) }} ₪
+                </span>
               </div>
-              <p class="expense-description">
-                {{ exp["description"] }}
+
+              <p class="expense-desc">
+                {{ e.description }}
               </p>
-              <div class="expense-meta">
-                <span>{{ exp["category"] }}</span>
-                <span>{{ exp["payment_method"] }}</span>
+
+              <div class="expense-meta-row">
+                <span class="expense-pill">{{ e.category }}</span>
+                <span class="expense-pill pill-muted">{{ e.payment_method }}</span>
               </div>
             </div>
+
             <div class="expense-actions">
-              <a href="{{ url_for('edit_expense', expense_id=exp['id']) }}" class="btn btn-edit">
+              <a href="{{ url_for('edit_expense', expense_id=e.id) }}" class="action-btn edit-btn">
                 ✏ ערוך
               </a>
-              <a href="{{ url_for('delete_expense', expense_id=exp['id']) }}" class="btn btn-delete"
-                 onclick="return confirm('למחוק את ההוצאה הזו?');">
+              <a href="{{ url_for('delete_expense', expense_id=e.id) }}"
+                 class="action-btn delete-btn"
+                 onclick="return confirm('למחוק הוצאה זו?');">
                 🗑 מחק
               </a>
             </div>
@@ -68,8 +93,11 @@
         {% endfor %}
       </div>
     {% else %}
-      <p class="empty-state">אין הוצאות לחודש שנבחר. נסה לבחור חודש אחר או להוסיף הוצאה.</p>
+      <p class="empty-state">
+        אין הוצאות לחודש שנבחר. אפשר להוסיף הוצאה חדשה עם הכפתור למעלה.
+      </p>
     {% endif %}
+
   </main>
 
 </div>

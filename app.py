@@ -5,6 +5,23 @@ import os
 DB_PATH = "expenses.db"
 app = Flask(__name__)
 
+# קטגוריות ברירת מחדל (יתווספו למה שיש במסד)
+DEFAULT_CATEGORIES = [
+    "בילויים",
+    "בית",
+    "ילדים",
+    "בריאות",
+]
+
+# אמצעי תשלום קבועים
+PAYMENT_METHODS = [
+    "מקס שלום",
+    "מקס חגית",
+    "כאל ויזה",
+    "לאומי שלום",
+    'עו"ש',
+]
+
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
@@ -83,7 +100,14 @@ def parse_year_month(selected_month):
     return year, month
 
 
+# ראוט שורש - תמיד מפנה למסך הרשימה
 @app.route("/")
+def root():
+    return redirect(url_for("index"))
+
+
+# המסך הראשי האמיתי - רשימת הוצאות
+@app.route("/expenses")
 def index():
     conn = get_db_connection()
 
@@ -155,17 +179,18 @@ def index():
     )
 
 
-@app.route("/add", methods=["GET", "POST"])
+@app.route("/add_expenses", methods=["GET", "POST"])
 def add_expense():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # טעינת רשימות קיימות לבחירה
+    # קטגוריות: מתוך המסד + ברירות מחדל
     cur.execute("SELECT DISTINCT category FROM expenses WHERE category != ''")
-    categories = [row["category"] for row in cur.fetchall()]
+    db_categories = [row["category"] for row in cur.fetchall()]
+    categories = sorted(set(db_categories + DEFAULT_CATEGORIES))
 
-    cur.execute("SELECT DISTINCT payment_method FROM expenses WHERE payment_method != ''")
-    payment_methods = [row["payment_method"] for row in cur.fetchall()]
+    # אמצעי תשלום קבועים
+    payment_methods = PAYMENT_METHODS
 
     if request.method == "POST":
         raw_date = request.form.get("date", "")
@@ -175,11 +200,22 @@ def add_expense():
         payment_method = request.form.get("payment_method", "").strip()
         description = request.form.get("description", "").strip()
 
+        # בדיקה שכל השדות מולאו
         if not date or not category or not amount_raw or not payment_method or not description:
             conn.close()
             return render_template(
                 "add_expense.html",
                 error="נא למלא את כל השדות",
+                categories=categories,
+                payment_methods=payment_methods
+            )
+
+        # בדיקת אמצעי תשלום מתוך הרשימה בלבד
+        if payment_method not in PAYMENT_METHODS:
+            conn.close()
+            return render_template(
+                "add_expense.html",
+                error="יש לבחור אמצעי תשלום מתוך הרשימה",
                 categories=categories,
                 payment_methods=payment_methods
             )
@@ -224,11 +260,13 @@ def edit_expense(expense_id):
         conn.close()
         return redirect(url_for("index"))
 
+    # קטגוריות: מתוך המסד + ברירות מחדל
     cur.execute("SELECT DISTINCT category FROM expenses WHERE category != ''")
-    categories = [row["category"] for row in cur.fetchall()]
+    db_categories = [row["category"] for row in cur.fetchall()]
+    categories = sorted(set(db_categories + DEFAULT_CATEGORIES))
 
-    cur.execute("SELECT DISTINCT payment_method FROM expenses WHERE payment_method != ''")
-    payment_methods = [row["payment_method"] for row in cur.fetchall()]
+    # אמצעי תשלום קבועים
+    payment_methods = PAYMENT_METHODS
 
     if request.method == "POST":
         raw_date = request.form.get("date", "")
@@ -237,6 +275,30 @@ def edit_expense(expense_id):
         amount_raw = request.form.get("amount", "").strip()
         payment_method = request.form.get("payment_method", "").strip()
         description = request.form.get("description", "").strip()
+
+        # בדיקה שכל השדות מולאו
+        if not date or not category or not amount_raw or not payment_method or not description:
+            conn.close()
+            return render_template(
+                "edit_expense.html",
+                expense=expense,
+                categories=categories,
+                payment_methods=payment_methods,
+                date_input=raw_date,
+                error="נא למלא את כל השדות"
+            )
+
+        # בדיקת אמצעי תשלום מתוך הרשימה בלבד
+        if payment_method not in PAYMENT_METHODS:
+            conn.close()
+            return render_template(
+                "edit_expense.html",
+                expense=expense,
+                categories=categories,
+                payment_methods=payment_methods,
+                date_input=raw_date,
+                error="יש לבחור אמצעי תשלום מתוך הרשימה"
+            )
 
         try:
             amount = float(amount_raw.replace(",", ""))
@@ -249,17 +311,6 @@ def edit_expense(expense_id):
                 payment_methods=payment_methods,
                 date_input=raw_date,
                 error="סכום לא תקין"
-            )
-
-        if not date or not category or not amount_raw or not payment_method or not description:
-            conn.close()
-            return render_template(
-                "edit_expense.html",
-                expense=expense,
-                categories=categories,
-                payment_methods=payment_methods,
-                date_input=raw_date,
-                error="נא למלא את כל השדות"
             )
 
         cur.execute("""

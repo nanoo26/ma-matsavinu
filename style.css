@@ -1,0 +1,345 @@
+/* בסיס כללי */
+body {
+  font-family: Arial, sans-serif;
+  direction: rtl;
+  text-align: right;
+  margin: 0;
+  padding: 0;
+  background: #0f172a;
+}
+
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+}
+
+/* כותרת עליונה */
+.app-header {
+  background: #2563eb;
+  color: #ffffff;
+  padding: 14px 16px 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.app-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* כפתורים וקישורים בכותרת */
+.header-link {
+  font-size: 14px;
+  text-decoration: none;
+  color: #e5e7eb;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(229,231,235,0.5);
+  white-space: nowrap;
+}
+
+.header-link:hover {
+  background: rgba(15,23,42,0.2);
+}
+
+.primary-button {
+  font-size: 14px;
+  text-decoration: none;
+  color: #0f172a;
+  background: #facc15;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  border: none;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background: #eab308;
+}
+
+.secondary-button {
+  font-size: 14px;
+  text-decoration: none;
+  color: #111827;
+  background: #e5e7eb;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 500;
+  border: none;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  background: #d1d5db;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* סיכום עליון */
+.summary-bar {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #e5e7eb;
+  opacity: 0.95;
+}
+
+/* תיבת סינון חודש */
+.filter-bar {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.filter-bar label {
+  color: #e5e7eb;
+}
+
+.filter-bar select {
+  flex: 1;
+  padding: 4px 6px;
+  border-radius: 999px;
+  border: 1px solid #bfdbfe;
+  font-size: 13px;
+}
+
+/* תוכן כללי */
+.content {
+  flex: 1;
+  padding: 12px 12px 20px;
+}
+
+/* רשימת הוצאות */
+.expense-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.expense-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.12);
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.expense-main {
+  flex: 1;
+}
+
+.expense-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.expense-date {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.expense-amount {
+  font-size: 17px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.expense-description {
+  margin: 0;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #111827;
+}
+
+.expense-meta {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  gap: 10px;
+}
+
+/* כפתורי עריכה ומחיקה */
+.expense-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background: #e0f2fe;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.btn-edit:hover {
+  background: #dbeafe;
+}
+
+.btn-delete {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.btn-delete:hover {
+  background: #fecaca;
+}
+
+/* דוחות וסיכומים */
+.section-title {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.12);
+  margin-bottom: 8px;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.amount {
+  font-weight: 700;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+/* מצבים ריקים */
+.empty-state {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* טפסים */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.form-input,
+.form-textarea {
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  outline: none;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37,99,235,0.2);
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+/* מובייל קטן מאוד */
+@media (max-width: 360px) {
+  .app-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summary-bar {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .expense-card {
+    flex-direction: column;
+  }
+
+  .expense-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

@@ -40,23 +40,108 @@ def date_for_input(db_date: str) -> str:
     return f"{year}-{month}-{day}"
 
 
+def get_available_months(conn):
+    """
+    מחזיר רשימת חודשים קיימים במסד הנתונים, מהחדש לישן.
+    כל פריט הוא dict עם:
+    key = YYYY-MM
+    label = MM/YYYY
+    """
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT DISTINCT
+               SUBSTR(date, 7, 4) AS year,
+               SUBSTR(date, 4, 2) AS month
+        FROM expenses
+        WHERE date IS NOT NULL AND date != ''
+        ORDER BY year DESC, month DESC
+    """)
+    rows = cur.fetchall()
+    months = []
+    for row in rows:
+        year = row["year"]
+        month = row["month"]
+        key = f"{year}-{month}"
+        label = f"{month}/{year}"
+        months.append({"key": key, "label": label})
+    return months
+
+
+def parse_year_month(selected_month):
+    """
+    מקבל מחרוזת בפורמט YYYY-MM ומחזיר (year, month)
+    אם הפורמט לא תקין מחזיר (None, None)
+    """
+    if not selected_month or "-" not in selected_month:
+        return None, None
+    parts = selected_month.split("-")
+    if len(parts) != 2:
+        return None, None
+    year, month = parts
+    if len(year) != 4 or len(month) != 2:
+        return None, None
+    return year, month
+
+
 @app.route("/")
 def index():
     conn = get_db_connection()
+
+    # רשימת חודשים זמינים
+    months = get_available_months(conn)
+
+    # קביעת חודש נבחר
+    selected_month = request.args.get("month")
+    valid_keys = {m["key"] for m in months}
+    if not months:
+        selected_month = None
+    else:
+        if not selected_month or selected_month not in valid_keys:
+            selected_month = months[0]["key"]
+
+    year = month = None
+    if selected_month:
+        year, month = parse_year_month(selected_month)
+
     cur = conn.cursor()
 
-    cur.execute("""
-        SELECT id, date, category, amount, payment_method, description
-        FROM expenses
-        ORDER BY date DESC, id DESC
-    """)
-    expenses = cur.fetchall()
+    if year and month:
+        # הוצאות לחודש הנבחר בלבד
+        cur.execute("""
+            SELECT id, date, category, amount, payment_method, description
+            FROM expenses
+            WHERE SUBSTR(date, 7, 4) = ? AND SUBSTR(date, 4, 2) = ?
+            ORDER BY date DESC, id DESC
+        """, (year, month))
+        expenses = cur.fetchall()
 
-    cur.execute("SELECT COUNT(*) FROM expenses")
-    total_rows = cur.fetchone()[0]
+        cur.execute("""
+            SELECT COUNT(*)
+            FROM expenses
+            WHERE SUBSTR(date, 7, 4) = ? AND SUBSTR(date, 4, 2) = ?
+        """, (year, month))
+        total_rows = cur.fetchone()[0]
 
-    cur.execute("SELECT SUM(amount) FROM expenses")
-    total_amount = cur.fetchone()[0] or 0
+        cur.execute("""
+            SELECT SUM(amount)
+            FROM expenses
+            WHERE SUBSTR(date, 7, 4) = ? AND SUBSTR(date, 4, 2) = ?
+        """, (year, month))
+        total_amount = cur.fetchone()[0] or 0
+    else:
+        # ברירת מחדל אם אין נתונים
+        cur.execute("""
+            SELECT id, date, category, amount, payment_method, description
+            FROM expenses
+            ORDER BY date DESC, id DESC
+        """)
+        expenses = cur.fetchall()
+
+        cur.execute("SELECT COUNT(*) FROM expenses")
+        total_rows = cur.fetchone()[0]
+
+        cur.execute("SELECT SUM(amount) FROM expenses")
+        total_amount = cur.fetchone()[0] or 0
 
     conn.close()
 
@@ -64,7 +149,9 @@ def index():
         "expenses.html",
         expenses=expenses,
         total_rows=total_rows,
-        total_amount=total_amount
+        total_amount=total_amount,
+        months=months,
+        selected_month=selected_month
     )
 
 
@@ -209,35 +296,59 @@ def delete_expense(expense_id):
 @app.route("/reports")
 def reports():
     conn = get_db_connection()
+
+    # רשימת חודשים זמינים
+    months = get_available_months(conn)
+
+    # קביעת חודש נבחר
+    selected_month = request.args.get("month")
+    valid_keys = {m["key"] for m in months}
+    if not months:
+        selected_month = None
+    else:
+        if not selected_month or selected_month not in valid_keys:
+            selected_month = months[0]["key"]
+
+    year = month = None
+    if selected_month:
+        year, month = parse_year_month(selected_month)
+
     cur = conn.cursor()
 
-    # סיכום לפי חודש
-    cur.execute("""
-        SELECT 
-            SUBSTR(date, 4, 2) AS month,
-            SUBSTR(date, 7, 4) AS year,
-            SUM(amount) AS total
-        FROM expenses
-        GROUP BY year, month
-        ORDER BY year DESC, month DESC
-    """)
-    monthly_summary = cur.fetchall()
+    # סיכום לפי חודש לחודש הנבחר
+    if year and month:
+        cur.execute("""
+            SELECT 
+                SUBSTR(date, 4, 2) AS month,
+                SUBSTR(date, 7, 4) AS year,
+                SUM(amount) AS total
+            FROM expenses
+            WHERE SUBSTR(date, 7, 4) = ? AND SUBSTR(date, 4, 2) = ?
+            GROUP BY year, month
+        """, (year, month))
+        monthly_summary = cur.fetchall()
 
-    # סיכום לפי קטגוריה
-    cur.execute("""
-        SELECT category, SUM(amount) AS total
-        FROM expenses
-        GROUP BY category
-        ORDER BY total DESC
-    """)
-    category_summary = cur.fetchall()
+        # סיכום לפי קטגוריה לחודש הנבחר
+        cur.execute("""
+            SELECT category, SUM(amount) AS total
+            FROM expenses
+            WHERE SUBSTR(date, 7, 4) = ? AND SUBSTR(date, 4, 2) = ?
+            GROUP BY category
+            ORDER BY total DESC
+        """, (year, month))
+        category_summary = cur.fetchall()
+    else:
+        monthly_summary = []
+        category_summary = []
 
     conn.close()
 
     return render_template(
         "reports.html",
         monthly_summary=monthly_summary,
-        category_summary=category_summary
+        category_summary=category_summary,
+        months=months,
+        selected_month=selected_month
     )
 
 

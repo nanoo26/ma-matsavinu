@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>הוספת הוצאה - מה מצבינו</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="app-header">
+    <div class="app-header-top">
+      <h1 class="app-title">הוספת הוצאה</h1>
+      <nav class="header-actions">
+        <a href="{{ url_for('index') }}" class="header-link">חזרה לרשימה</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="content">
+    {% if error %}
+      <p class="form-error">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" class="form">
+      <div class="form-group">
+        <label for="date" class="form-label">תאריך</label>
+        <input type="date" id="date" name="date" class="form-input" required>
+      </div>
+
+      <div class="form-group">
+        <label for="category" class="form-label">קטגוריה</label>
+        <input list="category-list" id="category" name="category" class="form-input" placeholder="לדוגמה: מזון, רכב, בילויים" required>
+        <datalist id="category-list">
+          {% for cat in categories %}
+            <option value="{{ cat }}"></option>
+          {% endfor %}
+        </datalist>
+      </div>
+
+      <div class="form-group">
+        <label for="amount" class="form-label">סכום</label>
+        <input type="number" step="0.01" id="amount" name="amount" class="form-input" placeholder="לדוגמה: 250" required>
+      </div>
+
+      <div class="form-group">
+        <label for="payment_method" class="form-label">אמצעי תשלום</label>
+        <input list="payment-list" id="payment_method" name="payment_method" class="form-input" placeholder="לדוגמה: אשראי, מזומן, העברה" required>
+        <datalist id="payment-list">
+          {% for pm in payment_methods %}
+            <option value="{{ pm }}"></option>
+          {% endfor %}
+        </datalist>
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="form-label">הערות</label>
+        <textarea id="description" name="description" class="form-textarea" rows="2" placeholder="תיאור קצר של ההוצאה" required></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="primary-button full-width">שמור הוצאה</button>
+        <a href="{{ url_for('index') }}" class="secondary-button full-width">ביטול</a>
+      </div>
+    </form>
+  </main>
+
+</div>
+</body>
+</html>

@@ -14,7 +14,7 @@
     <div class="app-header-top">
       <h1 class="app-title">מה מצבינו</h1>
       <nav class="header-actions">
-        <a href="{{ url_for('reports') }}" class="header-link">דוחות</a>
+        <a href="{{ url_for('reports', month=selected_month) }}" class="header-link">דוחות</a>
         <a href="{{ url_for('add_expense') }}" class="primary-button">+ הוצאה</a>
       </nav>
     </div>
@@ -22,6 +22,19 @@
       <span>סהכ שורות: {{ total_rows }}</span>
       <span>סהכ הוצאות: {{ "%.2f" | format(total_amount) }} ₪</span>
     </div>
+
+    {% if months %}
+      <form method="get" class="filter-bar">
+        <label for="month-select">חודש:</label>
+        <select id="month-select" name="month" onchange="this.form.submit()">
+          {% for m in months %}
+            <option value="{{ m.key }}" {% if m.key == selected_month %}selected{% endif %}>
+              {{ m.label }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+    {% endif %}
   </header>
 
   <main class="content">
@@ -55,7 +68,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <p class="empty-state">עדיין אין הוצאות. לחץ על כפתור הוצאה כדי להוסיף.</p>
+      <p class="empty-state">אין הוצאות לחודש שנבחר. נסה לבחור חודש אחר או להוסיף הוצאה.</p>
     {% endif %}
   </main>
 

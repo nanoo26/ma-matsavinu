@@ -5,7 +5,7 @@ body {
   text-align: right;
   margin: 0;
   padding: 0;
-  background: #0f172a; /* רקע חיצוני כהה */
+  background: #0f172a;
 }
 
 .app-shell {
@@ -64,16 +64,39 @@ body {
   text-decoration: none;
   color: #0f172a;
   background: #facc15;
-  padding: 6px 14px;
+  padding: 8px 14px;
   border-radius: 999px;
   font-weight: 600;
   border: none;
   display: inline-block;
-  white-space: nowrap;
+  text-align: center;
+  cursor: pointer;
 }
 
 .primary-button:hover {
   background: #eab308;
+}
+
+.secondary-button {
+  font-size: 14px;
+  text-decoration: none;
+  color: #111827;
+  background: #e5e7eb;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 500;
+  border: none;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  background: #d1d5db;
+}
+
+.full-width {
+  width: 100%;
 }
 
 /* סיכום עליון */
@@ -84,6 +107,27 @@ body {
   font-size: 13px;
   color: #e5e7eb;
   opacity: 0.95;
+}
+
+/* תיבת סינון חודש */
+.filter-bar {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.filter-bar label {
+  color: #e5e7eb;
+}
+
+.filter-bar select {
+  flex: 1;
+  padding: 4px 6px;
+  border-radius: 999px;
+  border: 1px solid #bfdbfe;
+  font-size: 13px;
 }
 
 /* תוכן כללי */
@@ -222,6 +266,60 @@ body {
   font-size: 14px;
   color: #6b7280;
   text-align: center;
+}
+
+/* טפסים */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.form-input,
+.form-textarea {
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  outline: none;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37,99,235,0.2);
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 10px;
 }
 
 /* מובייל קטן מאוד */

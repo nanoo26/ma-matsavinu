@@ -5,12 +5,42 @@ import os
 DB_PATH = "expenses.db"
 app = Flask(__name__)
 
+
+def init_db():
+    """
+    יוצר את טבלת ההוצאות אם היא לא קיימת
+    שם העמודות מותאם למה שהקוד משתמש בו: description ולא notes
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL,
+            category TEXT NOT NULL,
+            amount REAL NOT NULL,
+            payment_method TEXT NOT NULL,
+            description TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+
+# נוודא שהטבלה קיימת כבר בזמן עליית האפליקציה (גם לוקאלי וגם ב־Render)
+init_db()
+
+
 # קטגוריות ברירת מחדל (יתווספו למה שיש במסד)
 DEFAULT_CATEGORIES = [
     "בילויים",
     "בית",
     "ילדים",
     "בריאות",
+    "חוגים",
+    "קניות",
+    "שונות",
+    "טבק",
 ]
 
 # אמצעי תשלום קבועים
@@ -21,6 +51,7 @@ PAYMENT_METHODS = [
     "לאומי שלום",
     'עו"ש',
 ]
+
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)

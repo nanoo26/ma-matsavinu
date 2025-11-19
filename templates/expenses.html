@@ -14,15 +14,18 @@
     <div class="app-header-top">
       <h1 class="app-title">מה מצבינו</h1>
       <nav class="header-actions">
-        <a href="{{ url_for('reports', month=selected_month) }}" class="header-link">דוחות</a>
-        <a href="{{ url_for('add_expense') }}" class="primary-button">+ הוצאה</a>
-      </nav>
+        <a href="{{ url_for('reports', month=selected_month) }}"
+           class="header-link header-icon-link"
+           aria-label="דוחות">
+           📊
+        </a>
+  <a href="{{ url_for('add_expense') }}" class="primary-button">+ הוצאה</a>
+</nav>
     </div>
     <div class="summary-bar">
-      <span>סהכ שורות: {{ total_rows }}</span>
-      <span>סהכ הוצאות: {{ "%.2f" | format(total_amount) }} ₪</span>
+      <span>סה״כ שורות: {{ total_rows }}</span>
+      <span>סה״כ הוצאות: {{ "%.2f" | format(total_amount) }} ₪</span>
     </div>
-
 
     {% if months %}
       <form method="get" class="filter-bar">
@@ -53,16 +56,18 @@
               </p>
               <div class="expense-meta">
                 <span>{{ exp["category"] }}</span>
-                <span>{{ exp["payment_method"] }}</span>
               </div>
             </div>
+
             <div class="expense-actions">
-              <a href="{{ url_for('edit_expense', expense_id=exp['id']) }}" class="btn btn-edit">
-                ✏ ערוך
+              <a href="{{ url_for('edit_expense', expense_id=exp['id']) }}"
+                 class="chip-btn chip-edit">
+                ערוך
               </a>
-              <a href="{{ url_for('delete_expense', expense_id=exp['id']) }}" class="btn btn-delete"
+              <a href="{{ url_for('delete_expense', expense_id=exp['id']) }}"
+                 class="chip-btn chip-delete"
                  onclick="return confirm('למחוק את ההוצאה הזו?');">
-                🗑 מחק
+                מחק
               </a>
             </div>
           </article>

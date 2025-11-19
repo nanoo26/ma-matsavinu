@@ -4,74 +4,140 @@
   <meta charset="utf-8">
   <title>עריכת הוצאה - מה מצבינו</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <div class="app-shell">
 
+  <!-- כותרת עליונה -->
   <header class="app-header">
     <div class="app-header-top">
       <h1 class="app-title">עריכת הוצאה</h1>
-      <nav class="header-actions">
-        <a href="{{ url_for('index') }}" class="header-link">חזרה לרשימה</a>
-      </nav>
+      <a href="{{ url_for('index') }}" class="back-pill">חזרה לרשימה</a>
     </div>
+    <p class="app-subtitle">עדכן פרטים ושמור שינוי</p>
   </header>
 
+  <!-- תוכן ראשי -->
+  <main class="app-main">
+    <section class="card card-form">
 
-  <main class="content">
-    {% if error %}
-      <p class="form-error">{{ error }}</p>
-    {% endif %}
-
-    <form method="post" class="form">
-      <div class="form-group">
-        <label for="date" class="form-label">תאריך</label>
-        <input type="date" id="date" name="date" class="form-input"
-               value="{{ date_input }}" required>
+      {% if error %}
+      <div class="form-error">
+        {{ error }}
       </div>
+      {% endif %}
 
-      <div class="form-group">
-        <label for="category" class="form-label">קטגוריה</label>
-        <input list="category-list" id="category" name="category" class="form-input"
-               value="{{ expense['category'] }}" required>
-        <datalist id="category-list">
-          {% for cat in categories %}
-            <option value="{{ cat }}"></option>
-          {% endfor %}
-        </datalist>
-      </div>
+      <form method="post" class="form">
 
-      <div class="form-group">
-        <label for="amount" class="form-label">סכום</label>
-        <input type="number" step="0.01" id="amount" name="amount" class="form-input"
-               value="{{ "%.2f" | format(expense['amount']) }}" required>
-      </div>
+        <!-- תאריך -->
+        <div class="form-group">
+          <label for="date">תאריך</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value="{{ date_input }}"
+            required
+          >
+        </div>
 
-      <div class="form-group">
-        <label for="payment_method" class="form-label">אמצעי תשלום</label>
-        <input list="payment-list" id="payment_method" name="payment_method" class="form-input"
-               value="{{ expense['payment_method'] }}" required>
-        <datalist id="payment-list">
-          {% for pm in payment_methods %}
-            <option value="{{ pm }}"></option>
-          {% endfor %}
-        </datalist>
-      </div>
+        <!-- קטגוריה -->
+        <div class="form-group">
+          <label for="category">קטגוריה</label>
+          <select id="category" name="category" required>
+            <option value="">בחר קטגוריה</option>
+            {% for cat in categories %}
+            <option value="{{ cat }}" {% if expense["category"] == cat %}selected{% endif %}>
+              {{ cat }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label for="description" class="form-label">הערות</label>
-        <textarea id="description" name="description" class="form-textarea" rows="2" required>{{ expense['description'] }}</textarea>
-      </div>
+        <!-- סכום -->
+        <div class="form-group">
+          <label for="amount">סכום</label>
+          <div class="input-with-suffix">
+            <input
+              type="number"
+              step="0.01"
+              inputmode="decimal"
+              id="amount"
+              name="amount"
+              placeholder="0.00"
+              value="{{ "%.2f"|format(expense['amount']|float) }}"
+              required
+            >
+            <span class="input-suffix">₪</span>
+          </div>
+        </div>
 
-      <div class="form-actions">
-        <button type="submit" class="primary-button full-width">שמור שינוי</button>
-        <a href="{{ url_for('index') }}" class="secondary-button full-width">ביטול</a>
-      </div>
-    </form>
+        <!-- אמצעי תשלום -->
+        <div class="form-group">
+          <label for="payment_method">אמצעי תשלום</label>
+          <select id="payment_method" name="payment_method" required>
+            <option value="">בחר אמצעי תשלום</option>
+            {% for pm in payment_methods %}
+            <option value="{{ pm }}" {% if expense["payment_method"] == pm %}selected{% endif %}>
+              {{ pm }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- הערות -->
+        <div class="form-group">
+          <label for="description">הערות</label>
+          <textarea
+            id="description"
+            name="description"
+            rows="3"
+            required
+          >{{ expense["description"] }}</textarea>
+        </div>
+
+        <!-- כפתורים -->
+        <div class="form-actions-vertical">
+          <button type="submit" class="btn btn-success btn-wide">
+            שמור שינוי
+          </button>
+          <a href="{{ url_for('index') }}" class="btn btn-danger btn-wide">
+            ביטול
+          </a>
+        </div>
+
+      </form>
+    </section>
   </main>
+
+    <!-- ניווט תחתון -->
+  <nav class="app-bottom-nav">
+    <a href="{{ url_for('index') }}" class="nav-item">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">רשימה</span>
+    </a>
+    <a href="{{ url_for('reports') }}" class="nav-item">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">דוחות</span>
+    </a>
+  </nav>
+
 
 </div>
 </body>
 </html>
+
+/* כפתורים בעריכת הוצאה - אחד מעל השני, באותו גודל */
+
+.form-actions-vertical {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-wide {
+  width: 100%;
+  justify-content: center;
+}

@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 import os
+import io
+import csv
 
 DB_PATH = "expenses.db"
 app = Flask(__name__)
@@ -433,6 +435,40 @@ def reports():
         selected_month=selected_month
     )
 
+@app.route("/export")
+def export_csv():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT date, category, amount, payment_method, description
+        FROM expenses
+        ORDER BY date ASC, id ASC
+    """)
+    rows = cur.fetchall()
+    conn.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["date", "category", "amount", "payment_method", "description"])
+    for row in rows:
+        writer.writerow([
+            row["date"],
+            row["category"],
+            row["amount"],
+            row["payment_method"],
+            row["description"],
+        ])
+
+    csv_data = output.getvalue()
+    output.close()
+
+    return Response(
+        csv_data,
+        mimetype="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": "attachment; filename=expenses_export.csv"
+        }
+    )
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

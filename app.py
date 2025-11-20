@@ -448,6 +448,7 @@ def export_csv():
     rows = cur.fetchall()
     conn.close()
 
+    # build CSV in memory
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(["date", "category", "amount", "payment_method", "description"])
@@ -463,13 +464,16 @@ def export_csv():
     csv_data = output.getvalue()
     output.close()
 
+    # add UTF-8 BOM so Excel will detect Hebrew correctly
+    csv_data = "\ufeff" + csv_data
+
     return Response(
         csv_data,
         mimetype="text/csv; charset=utf-8",
         headers={
             "Content-Disposition": "attachment; filename=expenses_export.csv"
-        }
-    )
+        })
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
